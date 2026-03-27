@@ -1,0 +1,14 @@
+node_modules/
+.git/
+.env
+.env.*
+*.log
+logs/
+drizzle/
+.neon_local/
+README.md
+*.md
+.prettierrc
+.prettierignore
+eslint.config.js
+skills-lock.json
