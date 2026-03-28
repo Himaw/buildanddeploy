@@ -161,3 +161,12 @@
 {"level":"info","message":"::1 - - [28/Mar/2026:04:35:56 +0000] \"DELETE /api/users/8 HTTP/1.1\" 200 267 \"-\" \"HTTPie\"","service":"user-service","timestamp":"2026-03-28T04:35:56.848Z"}
 {"level":"info","message":"::1 - - [28/Mar/2026:04:36:04 +0000] \"GET /api/users/8 HTTP/1.1\" 200 49 \"-\" \"HTTPie\"","service":"user-service","timestamp":"2026-03-28T04:36:04.909Z"}
 {"level":"info","message":"::1 - - [28/Mar/2026:04:36:10 +0000] \"GET /api/users/ HTTP/1.1\" 200 486 \"-\" \"HTTPie\"","service":"user-service","timestamp":"2026-03-28T04:36:10.304Z"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [28/Mar/2026:05:20:54 +0000] \"GET /health HTTP/1.1\" 200 193 \"-\" \"-\"","service":"user-service","timestamp":"2026-03-28T05:20:54.769Z"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [28/Mar/2026:05:20:54 +0000] \"GET /api HTTP/1.1\" 200 28 \"-\" \"-\"","service":"user-service","timestamp":"2026-03-28T05:20:54.785Z"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [28/Mar/2026:05:20:54 +0000] \"GET /nonexistent HTTP/1.1\" 404 15 \"-\" \"-\"","service":"user-service","timestamp":"2026-03-28T05:20:54.795Z"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [28/Mar/2026:05:21:25 +0000] \"GET /health HTTP/1.1\" 200 193 \"-\" \"-\"","service":"user-service","timestamp":"2026-03-28T05:21:25.331Z"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [28/Mar/2026:05:21:25 +0000] \"GET /api HTTP/1.1\" 200 28 \"-\" \"-\"","service":"user-service","timestamp":"2026-03-28T05:21:25.348Z"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [28/Mar/2026:05:21:25 +0000] \"GET /nonexistent HTTP/1.1\" 404 15 \"-\" \"-\"","service":"user-service","timestamp":"2026-03-28T05:21:25.357Z"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [28/Mar/2026:05:23:57 +0000] \"GET /health HTTP/1.1\" 200 193 \"-\" \"-\"","service":"user-service","timestamp":"2026-03-28T05:23:57.934Z"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [28/Mar/2026:05:23:57 +0000] \"GET /api HTTP/1.1\" 200 28 \"-\" \"-\"","service":"user-service","timestamp":"2026-03-28T05:23:57.951Z"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [28/Mar/2026:05:23:57 +0000] \"GET /nonexistent HTTP/1.1\" 404 29 \"-\" \"-\"","service":"user-service","timestamp":"2026-03-28T05:23:57.961Z"}
