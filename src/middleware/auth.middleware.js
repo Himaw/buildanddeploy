@@ -10,7 +10,9 @@ export const authMiddleware = (req, res, next) => {
     }
 
     if (!token) {
-      return res.status(401).json({ error: 'Unauthorized', message: 'No token provided' });
+      return res
+        .status(401)
+        .json({ error: 'Unauthorized', message: 'No token provided' });
     }
 
     const decoded = jwttoken.verify(token);
@@ -18,6 +20,8 @@ export const authMiddleware = (req, res, next) => {
     next();
   } catch (error) {
     logger.error('Authentication error', error);
-    return res.status(401).json({ error: 'Unauthorized', message: 'Invalid or expired token' });
+    return res
+      .status(401)
+      .json({ error: 'Unauthorized', message: 'Invalid or expired token' });
   }
 };

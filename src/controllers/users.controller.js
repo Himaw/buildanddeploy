@@ -34,9 +34,14 @@ export const fetchUserById = async (req, res, next) => {
 export const updateUserController = async (req, res, next) => {
   try {
     const { id } = req.params;
-    
+
     if (String(req.user.id) !== String(id) && req.user.role !== 'admin') {
-      return res.status(403).json({ error: 'Forbidden', message: 'You are not allowed to update this account' });
+      return res
+        .status(403)
+        .json({
+          error: 'Forbidden',
+          message: 'You are not allowed to update this account',
+        });
     }
 
     const { name, email, role } = req.body;
@@ -56,7 +61,12 @@ export const deleteUserController = async (req, res, next) => {
     const { id } = req.params;
 
     if (String(req.user.id) !== String(id) && req.user.role !== 'admin') {
-      return res.status(403).json({ error: 'Forbidden', message: 'You are not allowed to delete this account' });
+      return res
+        .status(403)
+        .json({
+          error: 'Forbidden',
+          message: 'You are not allowed to delete this account',
+        });
     }
 
     const user = await deleteUser(id);

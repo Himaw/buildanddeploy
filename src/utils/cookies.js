@@ -17,5 +17,5 @@ export const cookies = {
 
   get(req, name) {
     return req.cookies[name];
-  }
+  },
 };

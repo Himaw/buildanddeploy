@@ -7,6 +7,7 @@ Express + Drizzle ORM API backed by [Neon Serverless Postgres](https://neon.tech
 Neon Local is a proxy that creates an **ephemeral Neon branch** when the container starts and deletes it when it stops, giving each dev session an isolated copy of the database.
 
 ### Prerequisites
+
 - Docker Desktop
 - A Neon account ([console.neon.tech](https://console.neon.tech))
 - Your **Neon API key**, **Project ID**, and optionally a **Parent Branch ID**
@@ -63,12 +64,12 @@ Neon Local is a proxy that creates an **ephemeral Neon branch** when the contain
 
 ## Environment variables
 
-| Variable | Dev | Prod | Description |
-|---|---|---|---|
-| `DATABASE_URL` | `postgres://neon:npg@db:5432/neondb` | Neon Cloud URL | Postgres connection string |
-| `NEON_LOCAL_HOST` | `db` | — | Enables HTTP proxy mode for the Neon serverless driver |
-| `NEON_API_KEY` | required | — | Neon API key (for Neon Local container) |
-| `NEON_PROJECT_ID` | required | — | Neon project ID (for Neon Local container) |
-| `PARENT_BRANCH_ID` | optional | — | Branch to create ephemeral branch from (defaults to main) |
-| `PORT` | `3000` | `3000` | HTTP port |
-| `NODE_ENV` | `development` | `production` | Node environment |
+| Variable           | Dev                                  | Prod           | Description                                               |
+| ------------------ | ------------------------------------ | -------------- | --------------------------------------------------------- |
+| `DATABASE_URL`     | `postgres://neon:npg@db:5432/neondb` | Neon Cloud URL | Postgres connection string                                |
+| `NEON_LOCAL_HOST`  | `db`                                 | —              | Enables HTTP proxy mode for the Neon serverless driver    |
+| `NEON_API_KEY`     | required                             | —              | Neon API key (for Neon Local container)                   |
+| `NEON_PROJECT_ID`  | required                             | —              | Neon project ID (for Neon Local container)                |
+| `PARENT_BRANCH_ID` | optional                             | —              | Branch to create ephemeral branch from (defaults to main) |
+| `PORT`             | `3000`                               | `3000`         | HTTP port                                                 |
+| `NODE_ENV`         | `development`                        | `production`   | Node environment                                          |
