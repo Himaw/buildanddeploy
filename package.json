@@ -19,6 +19,7 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
+    "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

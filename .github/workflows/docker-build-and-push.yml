@@ -1,0 +1,70 @@
+name: Docker Build and Push
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-and-push:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Enable multi-platform (buildx) support.
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Derive tags and OCI labels from git metadata.
+      # Tags produced:
+      #   - branch name  (e.g. main)
+      #   - short commit SHA (e.g. sha-a1b2c3d)
+      #   - latest        (only on pushes to main)
+      #   - prod-YYYYMMDD-HHmmss timestamp
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.DOCKER_USERNAME }}/buildanddeploy
+          tags: |
+            type=ref,event=branch
+            type=sha,format=short
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=prod-{{date 'YYYYMMDD-HHmmss'}}
+
+      # Build the production stage and push to Docker Hub.
+      # GHA cache (type=gha) keeps layer cache between runs.
+      - name: Build and push production image
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: production
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Generate step summary
+        run: |
+          {
+            echo "## 🐳 Docker Image Published"
+            echo ""
+            echo "**Platforms:** \`linux/amd64\`, \`linux/arm64\`"
+            echo ""
+            echo "**Published tags:**"
+            echo '```'
+            echo "${{ steps.meta.outputs.tags }}"
+            echo '```'
+          } >> $GITHUB_STEP_SUMMARY

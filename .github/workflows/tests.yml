@@ -1,0 +1,115 @@
+name: Tests
+
+on:
+  push:
+    branches: [main, staging]
+  pull_request:
+    branches: [main, staging]
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Pass --json to capture structured results; continue so coverage upload
+      # and annotations still run even when tests fail.
+      - name: Run tests
+        id: tests
+        run: npm test -- --json --outputFile=test-results.json
+        continue-on-error: true
+        env:
+          NODE_ENV: test
+          NODE_OPTIONS: --experimental-vm-modules
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      # Parse the Jest JSON output and create per-test annotations for failures.
+      - name: Annotate test failures
+        if: always() && steps.tests.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            if (!fs.existsSync('test-results.json')) {
+              core.error('test-results.json not found — Jest may have failed to start.');
+              return;
+            }
+            const results = JSON.parse(fs.readFileSync('test-results.json', 'utf8'));
+            for (const suite of results.testResults) {
+              const file = suite.testFilePath.replace(process.env.GITHUB_WORKSPACE + '/', '');
+              for (const test of suite.assertionResults) {
+                if (test.status === 'failed') {
+                  const message = (test.failureMessages ?? []).join('\n') || 'Test failed';
+                  core.error(`${test.fullName}\n${message}`, { file });
+                }
+              }
+            }
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 30
+
+      # Write a job summary with test counts and per-category coverage percentages.
+      - name: Generate step summary
+        if: always()
+        run: |
+          if [ "${{ steps.tests.outcome }}" == "success" ]; then
+            echo "## ✅ Tests Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## ❌ Tests Failed" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [ -f test-results.json ]; then
+            TOTAL=$(jq '.numTotalTests'      test-results.json)
+            PASSED=$(jq '.numPassedTests'    test-results.json)
+            FAILED=$(jq '.numFailedTests'    test-results.json)
+            SUITES=$(jq '.numTotalTestSuites' test-results.json)
+            {
+              echo ""
+              echo "| Metric       | Count |"
+              echo "|--------------|-------|"
+              echo "| Test Suites  | $SUITES |"
+              echo "| Total Tests  | $TOTAL  |"
+              echo "| Passed       | $PASSED |"
+              echo "| Failed       | $FAILED |"
+            } >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [ -f coverage/coverage-summary.json ]; then
+            LINES=$(jq '.total.lines.pct'      coverage/coverage-summary.json)
+            STMTS=$(jq '.total.statements.pct' coverage/coverage-summary.json)
+            FUNCS=$(jq '.total.functions.pct'  coverage/coverage-summary.json)
+            BRNCH=$(jq '.total.branches.pct'   coverage/coverage-summary.json)
+            {
+              echo ""
+              echo "### Coverage Summary"
+              echo ""
+              echo "| Category   | Coverage |"
+              echo "|------------|----------|"
+              echo "| Lines      | ${LINES}% |"
+              echo "| Statements | ${STMTS}% |"
+              echo "| Functions  | ${FUNCS}% |"
+              echo "| Branches   | ${BRNCH}% |"
+            } >> $GITHUB_STEP_SUMMARY
+          fi
+
+      # Ensure the job exits with a failure code if tests failed.
+      - name: Fail if tests failed
+        if: steps.tests.outcome == 'failure'
+        run: exit 1
